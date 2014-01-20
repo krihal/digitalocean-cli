@@ -1,0 +1,4 @@
+digitalocean-cli
+================
+
+DigitalOcean CLI
