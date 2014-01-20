@@ -28,25 +28,12 @@ class DigitalOcean():
                 return droplet.to_json()['id']
         return None
 
-    def droplet_status(self, name):
-        droplets = self.client.show_active_droplets()
-        for droplet in droplets:
-            if droplet.to_json()['name'] == name:
-                return True
-        return None
-
     def droplet_create(self, name, region):
         if self.droplet_status(name) is not None:
             return
         droplet = self.client.create_droplet(name, 66, 308287,
                                         self.regions[region])
         return droplet
-
-    def droplet_boot(self, droplet):
-        while droplet_status(droplet)[1] != "active":
-            time.sleep(1)
-        passwd = client.reset_root_password(droplet)
-        self.client.power_on_droplet(droplet['id'])
 
     def droplet_destroy(self, name):
         if self.droplet_status(name) is None:
