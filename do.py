@@ -5,14 +5,22 @@ import time
 import getopt
 import socket
 
-from dop.client import Client
+try:
+    from dop.client import Client
+except ImportError, e:
+    print "DOP is needed and may be found here:"
+    print "    https://github.com/ahmontero/dop"
+    sys.exit(-2)
+
 
 class DigitalOcean():
     def __init__(self, client_id, api_key):
-        self.regions = {'ny1': 1, 'ams1': 2, 'sf1': 3, 'ny2': 4}
         self.client_id = client_id
         self.api_key = api_key
         self.client = Client(self.client_id, self.api_key)
+
+        # This list in outdated, fixme
+        self.regions = {'ny1': 1, 'ams1': 2, 'sf1': 3, 'ny2': 4}
 
     def droplet_get(self, name):
         for droplet in self.client.show_active_droplets():
@@ -28,9 +36,9 @@ class DigitalOcean():
         return None
 
     def droplet_create(self, name, region):
-        if self.droplet_status(name) != None:
+        if self.droplet_status(name) is not None:
             return
-        droplet = self.client.create_droplet(name, 66, 308287, 
+        droplet = self.client.create_droplet(name, 66, 308287,
                                         self.regions[region])
         return droplet
 
@@ -41,7 +49,7 @@ class DigitalOcean():
         self.client.power_on_droplet(droplet['id'])
 
     def droplet_destroy(self, name):
-        if self.droplet_status(name) == None:
+        if self.droplet_status(name) is None:
             return 0
         print "Removing droplet %s" % name
         self.client.destroy_droplet(self.droplet_get(name))
@@ -53,7 +61,7 @@ class DigitalOcean():
             print json['name'] + " ",
             print json['status'] + " ",
             print json['ip_address']
-            
+
 
 def usage():
     print "Usage: %s takes the following parameters:" % sys.argv[0]
@@ -72,12 +80,13 @@ if __name__ == '__main__':
     droplets_delete = 0
     do_id = ""
     do_key = ""
-    optargs = ['list', 'name=', 'create', 'delete', 'location=', 'id=', 'key=', 'help']
+    optargs = ['list', 'name=', 'create', 'delete', 'location=',
+               'id=', 'key=', 'help']
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'ln:cdi:k:p:', optargs)
     except getopt.GetoptError:
-        usage()        
+        usage()
 
     for opt, arg in opts:
         if opt == '-h':
@@ -91,7 +100,7 @@ if __name__ == '__main__':
         elif opt in ('-d', '--delete'):
             droplets_delete = 1
         elif opt in ('-p', '--location'):
-            droplet_location = arg        
+            droplet_location = arg
         elif opt in ('-i', '--id'):
             do_id = arg
         elif opt in ('-k', '--key'):
@@ -115,6 +124,6 @@ if __name__ == '__main__':
         if droplets_create:
             do.droplet_create(droplet_name, droplet_location)
         if droplets_delete:
-            do.droplet_destroy(droplet_name)            
+            do.droplet_destroy(droplet_name)
     except Exception, e:
         print 'Failed with error: %s' % e
