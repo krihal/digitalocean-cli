@@ -29,16 +29,15 @@ class DigitalOcean():
         return None
 
     def droplet_create(self, name, region):
-        if self.droplet_status(name) is not None:
+        if self.droplet_get(name) is not None:
             return
         droplet = self.client.create_droplet(name, 66, 308287,
                                         self.regions[region])
         return droplet
 
     def droplet_destroy(self, name):
-        if self.droplet_status(name) is None:
+        if self.droplet_get(name) is None:
             return 0
-        print "Removing droplet %s" % name
         self.client.destroy_droplet(self.droplet_get(name))
 
     def droplet_list(self):
@@ -66,6 +65,8 @@ if __name__ == '__main__':
     droplets_create = 0
     droplets_list = 0
     droplets_delete = 0
+    droplet_name = ""
+    droplet_location = ""
     do_id = ""
     do_key = ""
     optargs = ['list', 'name=', 'create', 'delete', 'location=',
@@ -108,10 +109,19 @@ if __name__ == '__main__':
     try:
         do = DigitalOcean(do_id, do_key)
         if droplets_list:
+            print 'Available droplets:'
+            print '--------------------------------------'
             do.droplet_list()
         if droplets_create:
+            print "Creating droplet with name %s and location %s" % \
+                (droplet_name, droplet_location)            
+            if not droplet_location or not droplet_name:
+                usage()
             do.droplet_create(droplet_name, droplet_location)
         if droplets_delete:
+            print "Deleting droplet with name %s" % droplet_name
+            if not droplet_name:
+                usage()
             do.droplet_destroy(droplet_name)
     except Exception, e:
         print 'Failed with error: %s' % e
