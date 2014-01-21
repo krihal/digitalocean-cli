@@ -50,18 +50,19 @@ class DigitalOcean():
             print json['ip_address']
 
 
-def usage():
-    print "Usage: %s takes the following parameters:" % sys.argv[0]
-    print "  --list     Shows all droplets"
-    print "  --create   Create a new droplet"
-    print "  --delete   Remove a droplet"
-    print "  --name     Name for new droplets"
-    print "  --location Droplet location for new droplets"
-    print "  --id       DigitalOcean ID"
-    print "  --key      API key"
-    sys.exit(0)
-
 if __name__ == '__main__':
+
+    def usage():
+        print "Usage: %s takes the following parameters:" % sys.argv[0]
+        print "  --list     Shows all droplets"
+        print "  --create   Create a new droplet"
+        print "  --delete   Remove a droplet"
+        print "  --name     Name for new droplets"
+        print "  --location Droplet location for new droplets"
+        print "  --id       DigitalOcean ID"
+        print "  --key      API key"
+        sys.exit(0)
+
     droplets_create = 0
     droplets_list = 0
     droplets_delete = 0
